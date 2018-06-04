@@ -29,15 +29,6 @@ defmodule Dressing do
     end
   end
 
-  @spec read(File.io_device()) :: {:ok, iodata} | IO.nodata()
-  def read(file) do
-    case IO.binread(file, @to_read) do
-      :eof -> :eof
-      {:error, _} = error -> error
-      ok -> {:ok, ok}
-    end
-  end
-
   @spec get_mime(binary) :: file_info
   def get_mime(binary) do
     parse(binary)
