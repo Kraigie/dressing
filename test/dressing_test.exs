@@ -22,7 +22,8 @@ defmodule DressingTest do
   end
 
   test "defaults to nil when reading from binary file" do
-    assert (@path <> "cat") |> Dressing.get_mime_from_file() == {:ok, {nil, "application/octet-stream"}}
+    assert (@path <> "cat") |> Dressing.get_mime_from_file() ==
+             {:ok, {nil, "application/octet-stream"}}
   end
 
   test "finds mime from file" do
