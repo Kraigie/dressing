@@ -24,4 +24,12 @@ defmodule DressingTest do
   test "finds mime from file" do
     assert (@path <> "cat.jpg") |> Dressing.get_mime_from_file() == {:ok, {"jpg", "image/jpeg"}}
   end
+
+  test "returns just file info when banged" do
+    assert (@path <> "cat.jpg") |> Dressing.get_mime_from_file!() == {"jpg", "image/jpeg"}
+  end
+
+  test "raises on error" do
+    assert_raise File.Error, fn -> Dressing.get_mime_from_file!(@path <> "cat") end
+  end
 end

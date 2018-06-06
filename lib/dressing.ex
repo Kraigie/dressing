@@ -16,12 +16,30 @@ defmodule Dressing do
   # We don't want to read the entire file, so we should just take as many bytes as we need.
   @to_read 150
 
-  # TODO: Banged versions
   @spec get_mime_from_file(Path.t()) :: {:ok, file_info} | {:error, File.posix()} | IO.nodata()
   def get_mime_from_file(path) do
     with {:ok, file} <- File.open(path, [:binary, :read]),
          binary when is_binary(binary) <- IO.binread(file, @to_read) do
       {:ok, parse(binary)}
+    end
+  end
+
+  @spec get_mime_from_file!(Path.t()) :: file_info | no_return
+  def get_mime_from_file!(path) do
+    case get_mime_from_file(path) do
+      {:ok, info} ->
+        info
+
+      {:error, reason} ->
+        raise(File.Error, reason: reason, action: "open", path: IO.chardata_to_string(path))
+
+      :eof ->
+        raise(
+          File.Error,
+          reason: "reached end of file",
+          action: "read",
+          path: IO.chardata_to_string(path)
+        )
     end
   end
 
