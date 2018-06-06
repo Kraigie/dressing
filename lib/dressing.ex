@@ -14,12 +14,13 @@ defmodule Dressing do
   @type file_info :: {extension, mime_type}
 
   # We don't want to read the entire file, so we should just take as many bytes as we need.
-  @to_read 150
+  @to_read 12
 
   @spec get_mime_from_file(Path.t()) :: {:ok, file_info} | {:error, File.posix()} | IO.nodata()
   def get_mime_from_file(path) do
     with {:ok, file} <- File.open(path, [:binary, :read]),
          binary when is_binary(binary) <- IO.binread(file, @to_read) do
+      File.close(file)
       {:ok, parse(binary)}
     end
   end
@@ -34,12 +35,7 @@ defmodule Dressing do
         raise(File.Error, reason: reason, action: "open", path: IO.chardata_to_string(path))
 
       :eof ->
-        raise(
-          File.Error,
-          reason: "reached end of file",
-          action: "read",
-          path: IO.chardata_to_string(path)
-        )
+        raise(RuntimeError, "file was empty")
     end
   end
 
@@ -57,5 +53,5 @@ defmodule Dressing do
 
   defp parse(<<0x47, 0x49, 0x46, _::binary>>), do: {"gif", "image/gif"}
   defp parse(<<0xFF, 0xD8, 0xFF, _::binary>>), do: {"jpg", "image/jpeg"}
-  defp parse(_), do: {nil, "application/octet-stream"}
+  defp parse(bin) when is_binary(bin), do: {nil, "application/octet-stream"}
 end

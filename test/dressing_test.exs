@@ -21,16 +21,31 @@ defmodule DressingTest do
              {nil, "application/octet-stream"}
   end
 
-  # REVIEW: Should we extend this to check each mime type definition?
+  test "defaults to nil when reading from binary file" do
+    assert (@path <> "cat") |> Dressing.get_mime_from_file() == {:ok, {nil, "application/octet-stream"}}
+  end
+
   test "finds mime from file" do
     assert (@path <> "cat.jpg") |> Dressing.get_mime_from_file() == {:ok, {"jpg", "image/jpeg"}}
   end
 
-  test "returns just file info when banged" do
+  test "returns error tuple from errors" do
+    assert (@path <> "ca") |> Dressing.get_mime_from_file() == {:error, :enoent}
+  end
+
+  test "finds eof in empty file" do
+    assert (@path <> "empty_cat") |> Dressing.get_mime_from_file() == :eof
+  end
+
+  test "banged method returns just file info" do
     assert (@path <> "cat.jpg") |> Dressing.get_mime_from_file!() == {"jpg", "image/jpeg"}
   end
 
-  test "raises on error" do
-    assert_raise File.Error, fn -> Dressing.get_mime_from_file!(@path <> "cat") end
+  test "banged method raises on error" do
+    assert_raise File.Error, fn -> Dressing.get_mime_from_file!(@path <> "ca") end
+  end
+
+  test "banged method raises on empty file" do
+    assert_raise RuntimeError, fn -> Dressing.get_mime_from_file!(@path <> "empty_cat") end
   end
 end
