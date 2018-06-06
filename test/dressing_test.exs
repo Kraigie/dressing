@@ -7,7 +7,8 @@ defmodule DressingTest do
   %{
     "cat.jpg" => {"jpg", "image/jpeg"},
     "cat.png" => {"png", "image/png"},
-    "cat.gif" => {"gif", "image/gif"}
+    "cat.gif" => {"gif", "image/gif"},
+    "cat.webp" => {"webp", "image/webp"}
   }
   |> Enum.each(fn {key, {ext, _mime} = info} ->
     test "finds " <> ext do

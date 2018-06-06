@@ -48,11 +48,13 @@ defmodule Dressing do
     parse(binary)
   end
 
+  # REVIEW: Handle text files?
   @spec parse(binary) :: file_info
+  defp parse(<<_::bytes-size(8), 0x57, 0x45, 0x42, 0x50, _::binary>>), do: {"webp", "image/webp"}
+
   defp parse(<<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, _::binary>>),
     do: {"png", "image/png"}
 
-  # REVIEW: Handle text files?
   defp parse(<<0x47, 0x49, 0x46, _::binary>>), do: {"gif", "image/gif"}
   defp parse(<<0xFF, 0xD8, 0xFF, _::binary>>), do: {"jpg", "image/jpeg"}
   defp parse(_), do: {nil, "application/octet-stream"}
